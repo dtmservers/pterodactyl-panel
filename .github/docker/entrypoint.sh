@@ -25,20 +25,19 @@ if [ -f /app/var/.env ]; then
 else
   echo "external vars don't exist."
   rm -rf /app/.env
-  touch /app/var/.env
+  touch /app/.env
 
   ## manually generate a key because key generate --force fails
   if [ -z $APP_KEY ]; then
      echo -e "Generating key."
      APP_KEY=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
      echo -e "Generated app key: $APP_KEY"
-     echo -e "APP_KEY=$APP_KEY" > /app/var/.env
+     echo -e "APP_KEY=$APP_KEY" > /app/.env
   else
     echo -e "APP_KEY exists in environment, using that."
-    echo -e "APP_KEY=$APP_KEY" > /app/var/.env
+    echo -e "APP_KEY=$APP_KEY" > /app/.env
   fi
 
-  ln -s /app/var/.env /app/
 fi
 
 echo "Checking if https is required."
