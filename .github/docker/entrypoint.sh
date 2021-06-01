@@ -1,6 +1,18 @@
 #!/bin/ash -e
 cd /app
 
+cp .env.example .env \
+    && mkdir -p bootstrap/cache/ storage/logs storage/framework/sessions storage/framework/views storage/framework/cache \
+    && chmod 777 -R bootstrap storage \
+    && composer install --no-dev --optimize-autoloader \
+    && rm -rf .env bootstrap/cache/*.php
+
+rm /usr/local/etc/php-fpm.d/www.conf.default \
+    && echo "* * * * * /usr/local/bin/php /app/artisan schedule:run >> /dev/null 2>&1" >> /var/spool/cron/crontabs/root \
+    && sed -i s/ssl_session_cache/#ssl_session_cache/g /etc/nginx/nginx.conf \
+    && mkdir -p /var/run/php /var/run/nginx
+
+
 mkdir -p /var/log/panel/logs/ /var/log/supervisord/ /var/log/nginx/ /var/log/php7/ \
   && chmod 777 /var/log/panel/logs/ \
   && ln -s /var/log/panel/logs/ /app/storage/logs/
